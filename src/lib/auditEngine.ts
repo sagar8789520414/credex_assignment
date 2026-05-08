@@ -412,20 +412,31 @@ function applyRedundantIdeFlags(
     e => IDE_IDS.includes(e.toolId) && e.plan !== 'free' && e.plan !== 'hobby',
   );
 
-  if (paidIdeEntries.length < 2) return recommendations;
+  // Group by toolId to avoid flagging multiple entries of the same tool
+  const toolIdToEntries = new Map<string, ToolEntry[]>();
+  for (const entry of paidIdeEntries) {
+    if (!toolIdToEntries.has(entry.toolId)) {
+      toolIdToEntries.set(entry.toolId, []);
+    }
+    toolIdToEntries.get(entry.toolId)!.push(entry);
+  }
 
-  // Sort by user-reported spend descending — keep cheapest, flag the rest
-  const sorted = [...paidIdeEntries].sort(
-    (a, b) => currentSpendFromEntry(b) - currentSpendFromEntry(a),
-  );
-  const keepTool = sorted[sorted.length - 1]; // cheapest
-  const redundant = sorted.slice(0, sorted.length - 1); // everything more expensive
+  // Only flag if there are multiple different tools
+  if (toolIdToEntries.size < 2) return recommendations;
 
-  const redundantIds = new Set(redundant.map(e => e.toolId));
-  const keepName = getToolName(keepTool.toolId);
+  // Sort by total spend per tool descending — keep cheapest, flag the rest
+  const toolSpends = Array.from(toolIdToEntries.entries()).map(([toolId, toolEntries]) => ({
+    toolId,
+    totalSpend: toolEntries.reduce((sum, e) => sum + currentSpendFromEntry(e), 0),
+  }));
+
+  const sorted = toolSpends.sort((a, b) => b.totalSpend - a.totalSpend);
+  const keepToolId = sorted[sorted.length - 1].toolId; // cheapest tool
+  const redundantToolIds = new Set(sorted.slice(0, sorted.length - 1).map(t => t.toolId));
+  const keepName = getToolName(keepToolId);
 
   return recommendations.map(rec => {
-    if (!redundantIds.has(rec.toolId)) return rec;
+    if (!redundantToolIds.has(rec.toolId)) return rec;
 
     const currentSpend = rec.currentSpend;
     return {
