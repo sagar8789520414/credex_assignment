@@ -40,25 +40,8 @@ function checkEnv() {
 checkEnv();
 
 // ── Middleware ────────────────────────────────────────────────────────────────
-const allowedOrigins = [
-  process.env.APP_URL ?? 'http://localhost:5173',
-  'http://localhost:5173',
-  'http://localhost:3000',
-];
-
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      // Log but still allow — CORS preflight will pass, actual request may fail
-      console.log(`[cors] Request from ${origin}`);
-      callback(null, true);
-    }
-  },
+  origin: true, // Allow all origins
   credentials: true,
 }));
 app.use(express.json());
