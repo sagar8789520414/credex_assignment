@@ -41,11 +41,17 @@ export function saveAudit(audit: AuditResult): void {
 
   // Persist to backend so share links work across devices
   const apiUrl = import.meta.env.VITE_API_URL || '';
+  if (!apiUrl) {
+    console.warn('[storage] VITE_API_URL not set — share links will only work on this device');
+    return;
+  }
+
   fetch(`${apiUrl}/api/audits`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(audit),
-  }).catch(() => {
+  }).catch((err) => {
+    console.error('[storage] Failed to persist audit to backend:', err);
     // Non-fatal — local storage still works for same-browser access
   });
 }
