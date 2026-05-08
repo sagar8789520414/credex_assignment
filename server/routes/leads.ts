@@ -26,7 +26,7 @@ router.post('/', async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'email and auditId are required' });
   }
 
-  // Basic email format check
+  // Validate email format
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return res.status(400).json({ error: 'Invalid email address' });
   }
@@ -73,7 +73,8 @@ router.post('/', async (req: Request, res: Response) => {
   }
 });
 
-function buildEmailHtml({ email, companyName, auditId }: Partial<LeadBody>): string {
+function buildEmailHtml({ companyName, auditId }: Partial<LeadBody>): string {
+  // Note: email is not used in email template — it's passed to resend.emails.send() instead
   const shareUrl = `${process.env.APP_URL ?? 'https://spendlens.app'}/share/${auditId}`;
   return `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px;">

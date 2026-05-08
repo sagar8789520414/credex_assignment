@@ -233,7 +233,8 @@ function auditChatGPT(entry: ToolEntry, _useCase: UseCase, teamSize: number): To
   return optimal(entry, currentSpend, 'ChatGPT plan is appropriate for your team size and use case.');
 }
 
-function auditAnthropicApi(entry: ToolEntry, _useCase: UseCase, _teamSize: number): ToolRecommendation {
+function auditAnthropicApi(entry: ToolEntry): ToolRecommendation {
+  // Note: _teamSize and _useCase not used for API audits — only subscription plans use them
   const currentSpend = currentSpendFromEntry(entry);
 
   if (currentSpend > 100 * entry.seats) {
@@ -252,7 +253,8 @@ function auditAnthropicApi(entry: ToolEntry, _useCase: UseCase, _teamSize: numbe
   return optimal(entry, currentSpend, "API spend looks proportionate. Ensure you're on the right model tier for your latency/cost needs.");
 }
 
-function auditOpenAiApi(entry: ToolEntry, _useCase: UseCase, _teamSize: number): ToolRecommendation {
+function auditOpenAiApi(entry: ToolEntry): ToolRecommendation {
+  // Note: _teamSize and _useCase not used for API audits — only subscription plans use them
   const currentSpend = currentSpendFromEntry(entry);
 
   if (currentSpend > 100 * entry.seats) {
@@ -409,8 +411,8 @@ const AUDITORS: Record<string, (e: ToolEntry, u: UseCase, t: number) => ToolReco
   github_copilot: auditGithubCopilot,
   claude: auditClaude,
   chatgpt: auditChatGPT,
-  anthropic_api: auditAnthropicApi,
-  openai_api: auditOpenAiApi,
+  anthropic_api: (e) => auditAnthropicApi(e),
+  openai_api: (e) => auditOpenAiApi(e),
   gemini: auditGemini,
   windsurf: auditWindsurf,
 };

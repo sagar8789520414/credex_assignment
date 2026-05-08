@@ -7,7 +7,9 @@ const AUDITS_KEY = 'asa_audits';
 export function saveFormState(state: FormState): void {
   try {
     localStorage.setItem(FORM_KEY, JSON.stringify({ ...state, _v: FORM_VERSION }));
-  } catch (_) {}
+  } catch {
+    // Ignore storage errors — storage may be unavailable
+  }
 }
 
 export function loadFormState(): FormState | null {
@@ -21,7 +23,8 @@ export function loadFormState(): FormState | null {
       return null;
     }
     return parsed as FormState;
-  } catch (_) {
+  } catch {
+    // Ignore parse errors — return null
     return null;
   }
 }
@@ -32,7 +35,9 @@ export function saveAudit(audit: AuditResult): void {
     const existing = loadAllAudits();
     existing[audit.id] = audit;
     localStorage.setItem(AUDITS_KEY, JSON.stringify(existing));
-  } catch (_) {}
+  } catch {
+    // Ignore storage errors — may be unavailable
+  }
 
   // Persist to backend so share links work across devices
   fetch('/api/audits', {
@@ -48,7 +53,7 @@ export function loadAudit(id: string): AuditResult | null {
   try {
     const all = loadAllAudits();
     return all[id] ?? null;
-  } catch (_) {
+  } catch {
     return null;
   }
 }
@@ -58,7 +63,7 @@ export async function loadAuditRemote(id: string): Promise<AuditResult | null> {
     const res = await fetch(`/api/audits/${id}`);
     if (!res.ok) return null;
     return await res.json() as AuditResult;
-  } catch (_) {
+  } catch {
     return null;
   }
 }
@@ -67,7 +72,7 @@ function loadAllAudits(): Record<string, AuditResult> {
   try {
     const raw = localStorage.getItem(AUDITS_KEY);
     return raw ? JSON.parse(raw) : {};
-  } catch (_) {
+  } catch {
     return {};
   }
 }
