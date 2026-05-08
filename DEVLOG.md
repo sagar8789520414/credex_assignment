@@ -43,8 +43,22 @@
 **Plan for tomorrow:** Push to GitHub, deploy to Vercel/Render, write REFLECTION.md, submit the assignment.
 
 ## Day 7 — 2026-05-08
-**Hours worked:** 3
+**Hours worked:** 5
 **What I did:** Initialised the public GitHub repo, wrote meaningful conventional commit messages for the full history, pushed all code. Verified `.env` is in `.gitignore` and no secrets are in the repo. Deployed the frontend to Vercel — set `VITE_ANTHROPIC_API_KEY` as an environment variable in the Vercel dashboard. Deployed the Express backend to Render as a Node.js web service with all non-`VITE_` env vars set. Confirmed the live URL is reachable, the share link works cross-device, and the lead capture email arrives. Ran the CI workflow on the pushed commit — lint, tests (8/8 passing), and build all green. Took 3 screenshots of the app (form, results page, shared result) and added them to README.md. Submitted the Google Form with the GitHub repo URL, live deployed URL, and all required files confirmed present.
-**What I learned:** Vercel's environment variable UI doesn't expose `VITE_` prefixed vars to the browser by default — you have to mark them as "exposed to browser" or they come through as `undefined`. Caught this during the post-deploy smoke test when the Anthropic summary wasn't loading.
-**Blockers / what I'm stuck on:** None. Submission complete.
+
+**CI Workflow Issues & Fixes:**
+After the initial push, the GitHub Actions workflow flagged 10 lint errors and warnings. Fixed all of them:
+1. **setState in Effect** — `AISummary.tsx` and `AuditResults.tsx` had synchronous setState calls in effect bodies. Wrapped state updates in async functions with `cancelled` flag checks to prevent cascading renders.
+2. **Missing Dependency** — Changed `audit.id` to `audit` in the dependency array of `AISummary.tsx` to properly track all dependencies.
+3. **Non-Component Exports** — Extracted `badgeVariants` and `buttonVariants` into separate files (`badge-variants.ts`, `button-variants.ts`) so component files only export React components (required by `react-refresh` rule).
+4. **Unused Variables** — Added explanatory comments for unused parameters (`_teamSize`, `_useCase` in API auditors; `_` in catch blocks; `email` in email builder) to document why they exist.
+5. **Empty Blocks** — Added comments inside empty catch blocks in `storage.ts`.
+6. **Empty Interface** — Removed unused `InputProps` interface from `input.tsx` and inlined the type.
+7. **TypeScript Build Error** — Added non-null assertion (`id!`) in `AuditResults.tsx` after the `if (!id) return;` guard.
+8. **Duplicate Validation** — Removed duplicate email regex check in `server/routes/leads.ts`.
+
+Final result: All CI checks pass — 0 lint errors, 8/8 tests passing, build successful.
+
+**What I learned:** Vercel's environment variable UI doesn't expose `VITE_` prefixed vars to the browser by default — you have to mark them as "exposed to browser" or they come through as `undefined`. Caught this during the post-deploy smoke test when the Anthropic summary wasn't loading. ESLint rules like `react-hooks/set-state-in-effect` and `react-refresh/only-export-components` exist for good reasons — they catch real performance and tooling issues.
+**Blockers / what I'm stuck on:** None. Submission complete with all CI checks passing.
 **Plan for tomorrow:** N/A — assignment submitted.
