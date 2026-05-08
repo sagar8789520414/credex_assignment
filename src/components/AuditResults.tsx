@@ -59,12 +59,30 @@ export default function AuditResults() {
     try {
       // Ensure audit is persisted to backend before sharing
       const apiUrl = import.meta.env.VITE_API_URL || '';
+      console.log('[share] Attempting to persist audit:', { apiUrl, auditId: audit!.id });
+      
+      if (!apiUrl) {
+        console.error('[share] VITE_API_URL not set!');
+        showToast('Backend URL not configured. Contact support.');
+        setSharing(false);
+        return;
+      }
+
       const res = await fetch(`${apiUrl}/api/audits`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(audit),
       });
-      if (!res.ok) throw new Error('persist failed');
+      
+      console.log('[share] Persist response:', { status: res.status, ok: res.ok });
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        console.error('[share] Persist failed:', { status: res.status, error: errorData });
+        throw new Error(`persist failed: ${res.status}`);
+      }
+      
+      console.log('[share] Audit persisted successfully');
     } catch (err) {
       console.error('[share] Failed to persist audit:', err);
       showToast('Failed to save audit. Please try again.');
