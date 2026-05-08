@@ -64,6 +64,20 @@ function checkSeatOverkill(
 function auditCursor(entry: ToolEntry, useCase: UseCase, teamSize: number): ToolRecommendation {
   const currentSpend = currentSpendFromEntry(entry);
   const seats = entry.seats;
+  const expectedSpend = pricePerSeat('cursor', entry.plan) * seats;
+
+  // Check if user spend significantly deviates from plan pricing
+  if (currentSpend > expectedSpend * 1.5) {
+    return {
+      toolId: entry.toolId, toolName: getToolName(entry.toolId), currentSpend,
+      recommendedAction: 'Verify your spend — it exceeds the plan price',
+      projectedSpend: expectedSpend,
+      monthlySavings: currentSpend - expectedSpend,
+      annualSavings: (currentSpend - expectedSpend) * 12,
+      reason: `You entered $${fmt(currentSpend)}/mo for Cursor ${entry.plan} with ${seats} seat${seats > 1 ? 's' : ''}, but the plan costs $${fmt(expectedSpend)}/mo. Check if you're on a different plan or have add-ons.`,
+      severity: 'overspending',
+    };
+  }
 
   const seatCheck = checkSeatOverkill(entry, teamSize);
   if (seatCheck) return seatCheck;
@@ -119,6 +133,20 @@ function auditCursor(entry: ToolEntry, useCase: UseCase, teamSize: number): Tool
 function auditGithubCopilot(entry: ToolEntry, useCase: UseCase, teamSize: number): ToolRecommendation {
   const currentSpend = currentSpendFromEntry(entry);
   const seats = entry.seats;
+  const expectedSpend = pricePerSeat('github-copilot', entry.plan) * seats;
+
+  // Check if user spend significantly deviates from plan pricing
+  if (currentSpend > expectedSpend * 1.5) {
+    return {
+      toolId: entry.toolId, toolName: getToolName(entry.toolId), currentSpend,
+      recommendedAction: 'Verify your spend — it exceeds the plan price',
+      projectedSpend: expectedSpend,
+      monthlySavings: currentSpend - expectedSpend,
+      annualSavings: (currentSpend - expectedSpend) * 12,
+      reason: `You entered $${fmt(currentSpend)}/mo for GitHub Copilot ${entry.plan} with ${seats} seat${seats > 1 ? 's' : ''}, but the plan costs $${fmt(expectedSpend)}/mo. Check if you're on a different plan or have add-ons.`,
+      severity: 'overspending',
+    };
+  }
 
   const seatCheck = checkSeatOverkill(entry, teamSize);
   if (seatCheck) return seatCheck;
@@ -156,6 +184,20 @@ function auditGithubCopilot(entry: ToolEntry, useCase: UseCase, teamSize: number
 function auditClaude(entry: ToolEntry, useCase: UseCase, teamSize: number): ToolRecommendation {
   const currentSpend = currentSpendFromEntry(entry);
   const seats = entry.seats;
+  const expectedSpend = pricePerSeat('claude', entry.plan) * seats;
+
+  // Check if user spend significantly deviates from plan pricing
+  if (currentSpend > expectedSpend * 1.5) {
+    return {
+      toolId: entry.toolId, toolName: getToolName(entry.toolId), currentSpend,
+      recommendedAction: 'Verify your spend — it exceeds the plan price',
+      projectedSpend: expectedSpend,
+      monthlySavings: currentSpend - expectedSpend,
+      annualSavings: (currentSpend - expectedSpend) * 12,
+      reason: `You entered $${fmt(currentSpend)}/mo for Claude ${entry.plan} with ${seats} seat${seats > 1 ? 's' : ''}, but the plan costs $${fmt(expectedSpend)}/mo. Check if you're on a different plan or have add-ons.`,
+      severity: 'overspending',
+    };
+  }
 
   const seatCheck = checkSeatOverkill(entry, teamSize);
   if (seatCheck) return seatCheck;
@@ -196,6 +238,20 @@ function auditClaude(entry: ToolEntry, useCase: UseCase, teamSize: number): Tool
 function auditChatGPT(entry: ToolEntry, _useCase: UseCase, teamSize: number): ToolRecommendation {
   const currentSpend = currentSpendFromEntry(entry);
   const seats = entry.seats;
+  const expectedSpend = pricePerSeat('chatgpt', entry.plan) * seats;
+
+  // Check if user spend significantly deviates from plan pricing
+  if (currentSpend > expectedSpend * 1.5) {
+    return {
+      toolId: entry.toolId, toolName: getToolName(entry.toolId), currentSpend,
+      recommendedAction: 'Verify your spend — it exceeds the plan price',
+      projectedSpend: expectedSpend,
+      monthlySavings: currentSpend - expectedSpend,
+      annualSavings: (currentSpend - expectedSpend) * 12,
+      reason: `You entered $${fmt(currentSpend)}/mo for ChatGPT ${entry.plan} with ${seats} seat${seats > 1 ? 's' : ''}, but the plan costs $${fmt(expectedSpend)}/mo. Check if you're on a different plan or have add-ons.`,
+      severity: 'overspending',
+    };
+  }
 
   const seatCheck = checkSeatOverkill(entry, teamSize);
   if (seatCheck) return seatCheck;
