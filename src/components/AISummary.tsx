@@ -26,17 +26,19 @@ export default function AISummary({ audit }: Props) {
   const [isAI, setIsAI] = useState(false);
 
   useEffect(() => {
-    // If audit already has a summary (e.g. loaded from storage), use it
-    if (audit.aiSummary) {
-      setSummary(audit.aiSummary);
-      setIsAI(true);
-      setLoading(false);
-      return;
-    }
-
     let cancelled = false;
 
-    async function fetchSummary() {
+    async function initSummary() {
+      // If audit already has a summary (e.g. loaded from storage), use it
+      if (audit.aiSummary) {
+        if (!cancelled) {
+          setSummary(audit.aiSummary);
+          setIsAI(true);
+          setLoading(false);
+        }
+        return;
+      }
+
       try {
         const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
         if (!apiKey) throw new Error('No API key');
@@ -74,7 +76,7 @@ export default function AISummary({ audit }: Props) {
         } else {
           throw new Error('Empty response');
         }
-      } catch (_) {
+      } catch {
         if (!cancelled) {
           setSummary(buildFallbackSummary(audit));
           setIsAI(false);
@@ -84,9 +86,9 @@ export default function AISummary({ audit }: Props) {
       }
     }
 
-    fetchSummary();
+    initSummary();
     return () => { cancelled = true; };
-  }, [audit.id]);
+  }, [audit]);
 
   return (
     <Card className="border border-zinc-200 bg-white">

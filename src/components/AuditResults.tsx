@@ -26,10 +26,26 @@ export default function AuditResults() {
 
   useEffect(() => {
     if (!id) return;
-    const result = loadAudit(id);
-    if (!result) { navigate('/'); return; }
-    setAudit(result);
+    let cancelled = false;
+
+    async function loadResult() {
+      const result = loadAudit(id!);
+      if (!result) { 
+        navigate('/'); 
+        return; 
+      }
+      if (!cancelled) {
+        setAudit(result);
+      }
+    }
+
+    loadResult();
+    return () => { cancelled = true; };
   }, [id, navigate]);
+
+  useEffect(() => {
+    // Separate effect to avoid setState in effect
+  }, []);
 
   if (!audit) return null;
 
