@@ -59,7 +59,8 @@ export default function AuditResults() {
     setSharing(true);
     try {
       // Ensure audit is persisted to backend before sharing
-      const res = await fetch('/api/audits', {
+      const apiUrl = import.meta.env.VITE_API_URL || '';
+      const res = await fetch(`${apiUrl}/api/audits`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(audit),

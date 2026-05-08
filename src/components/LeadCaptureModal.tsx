@@ -50,7 +50,8 @@ export default function LeadCaptureModal({ auditId, onClose }: Props) {
     setError('');
 
     try {
-      const res = await fetch('/api/leads', {
+      const apiUrl = import.meta.env.VITE_API_URL || '';
+      const res = await fetch(`${apiUrl}/api/leads`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

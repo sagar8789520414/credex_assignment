@@ -40,7 +40,8 @@ export function saveAudit(audit: AuditResult): void {
   }
 
   // Persist to backend so share links work across devices
-  fetch('/api/audits', {
+  const apiUrl = import.meta.env.VITE_API_URL || '';
+  fetch(`${apiUrl}/api/audits`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(audit),
@@ -60,7 +61,8 @@ export function loadAudit(id: string): AuditResult | null {
 
 export async function loadAuditRemote(id: string): Promise<AuditResult | null> {
   try {
-    const res = await fetch(`/api/audits/${id}`);
+    const apiUrl = import.meta.env.VITE_API_URL || '';
+    const res = await fetch(`${apiUrl}/api/audits/${id}`);
     if (!res.ok) return null;
     return await res.json() as AuditResult;
   } catch {
