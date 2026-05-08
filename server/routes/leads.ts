@@ -22,12 +22,16 @@ interface LeadBody {
 router.post('/', async (req: Request, res: Response) => {
   const { email, companyName, role, teamSize, auditId } = req.body as LeadBody;
 
+  console.log('[leads] POST /api/leads', { email, auditId });
+
   if (!email || !auditId) {
+    console.warn('[leads] Missing required fields:', { email: !!email, auditId: !!auditId });
     return res.status(400).json({ error: 'email and auditId are required' });
   }
 
   // Validate email format
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    console.warn('[leads] Invalid email format:', email);
     return res.status(400).json({ error: 'Invalid email address' });
   }
 
