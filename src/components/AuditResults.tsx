@@ -55,6 +55,7 @@ export default function AuditResults() {
   const isSmallSavings = totalMonthlySavings > 0 && totalMonthlySavings <= 100;
 
   async function handleShare() {
+    console.log('[share] handleShare called');
     setSharing(true);
     try {
       // Ensure audit is persisted to backend before sharing

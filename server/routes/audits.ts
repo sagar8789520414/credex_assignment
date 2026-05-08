@@ -16,18 +16,23 @@ router.post('/', async (req: Request, res: Response) => {
 
   try {
     console.log('[audits] Saving to Supabase:', { id: audit.id });
-    const { error } = await supabase.from('audits').upsert({
+    const { error, data } = await supabase.from('audits').upsert({
       id: audit.id,
       data: audit,
       created_at: audit.createdAt ?? new Date().toISOString(),
     });
 
     if (error) {
-      console.error('[audits] DB error:', error.message, error.details);
+      console.error('[audits] DB error:', { 
+        message: error.message, 
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
       return res.status(500).json({ error: 'Failed to save audit', details: error.message });
     }
 
-    console.log('[audits] Successfully saved audit:', { id: audit.id });
+    console.log('[audits] Successfully saved audit:', { id: audit.id, dataReturned: !!data });
     return res.status(200).json({ success: true, id: audit.id });
   } catch (err: unknown) {
     console.error('[audits] Unexpected error:', err);
