@@ -73,6 +73,12 @@ export default function AuditResults() {
     }
 
     const appUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+    console.log('[share] Generated share URL:', { 
+      appUrl, 
+      viteAppUrlSet: !!import.meta.env.VITE_APP_URL,
+      windowOrigin: window.location.origin,
+      auditId: audit!.id 
+    });
     const shareUrl = `${appUrl}/share/${audit!.id}`;
 
     try {

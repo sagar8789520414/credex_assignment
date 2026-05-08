@@ -79,7 +79,12 @@ router.post('/', async (req: Request, res: Response) => {
 
 function buildEmailHtml({ companyName, auditId }: Partial<LeadBody>): string {
   // Note: email is not used in email template — it's passed to resend.emails.send() instead
-  const shareUrl = `${process.env.APP_URL ?? 'https://spendlens.app'}/share/${auditId}`;
+  const appUrl = process.env.APP_URL;
+  if (!appUrl) {
+    console.warn('[email] APP_URL not set — using fallback. Email links may not work in production.');
+  }
+  const shareUrl = `${appUrl ?? 'https://spendlens.app'}/share/${auditId}`;
+  console.log('[email] Generated share URL:', { shareUrl, appUrlSet: !!appUrl });
   return `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px;">
       <h1 style="color: #059669; font-size: 24px;">Your AI Spend Audit is ready</h1>
