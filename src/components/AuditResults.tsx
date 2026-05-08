@@ -53,7 +53,6 @@ export default function AuditResults() {
   const totalMonthlySavings = audit.totalMonthlySavings;
   const hasAnySavings = totalMonthlySavings > 0;
   const isSmallSavings = totalMonthlySavings > 0 && totalMonthlySavings <= 100;
-  const shareUrl = `${window.location.origin}/share/${audit.id}`;
 
   async function handleShare() {
     setSharing(true);
@@ -66,9 +65,15 @@ export default function AuditResults() {
         body: JSON.stringify(audit),
       });
       if (!res.ok) throw new Error('persist failed');
-    } catch {
-      // Non-fatal — share link may still work if already saved
+    } catch (err) {
+      console.error('[share] Failed to persist audit:', err);
+      showToast('Failed to save audit. Please try again.');
+      setSharing(false);
+      return;
     }
+
+    const appUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+    const shareUrl = `${appUrl}/share/${audit.id}`;
 
     try {
       await navigator.clipboard.writeText(shareUrl);
