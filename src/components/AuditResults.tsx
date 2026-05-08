@@ -73,7 +73,7 @@ export default function AuditResults() {
     }
 
     const appUrl = import.meta.env.VITE_APP_URL || window.location.origin;
-    const shareUrl = `${appUrl}/share/${audit.id}`;
+    const shareUrl = `${appUrl}/share/${audit!.id}`;
 
     try {
       await navigator.clipboard.writeText(shareUrl);
