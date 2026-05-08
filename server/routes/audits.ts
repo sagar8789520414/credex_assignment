@@ -16,7 +16,7 @@ router.post('/', async (req: Request, res: Response) => {
 
   try {
     console.log('[audits] Saving to Supabase:', { id: audit.id });
-    const { error, data } = await supabase.from('audits').upsert({
+    const { error } = await supabase.from('audits').upsert({
       id: audit.id,
       data: audit,
       created_at: audit.createdAt ?? new Date().toISOString(),
