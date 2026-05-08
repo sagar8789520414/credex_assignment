@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import type { FormState, AuditResult, ToolRecommendation, ToolEntry, UseCase } from '@/types';
+import type { FormState, AuditResult, ToolRecommendation, ToolEntry, UseCase, ToolId } from '@/types';
 import { getPlan, getToolName } from './pricingData';
 
 // ---------------------------------------------------------------------------
@@ -431,7 +431,7 @@ function applyRedundantIdeFlags(
   }));
 
   const sorted = toolSpends.sort((a, b) => b.totalSpend - a.totalSpend);
-  const keepToolId = sorted[sorted.length - 1].toolId; // cheapest tool
+  const keepToolId = sorted[sorted.length - 1].toolId as ToolId; // cheapest tool
   const redundantToolIds = new Set(sorted.slice(0, sorted.length - 1).map(t => t.toolId));
   const keepName = getToolName(keepToolId);
 
