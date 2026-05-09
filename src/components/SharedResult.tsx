@@ -35,10 +35,18 @@ export default function SharedResult() {
   useEffect(() => {
     if (!id) return;
     async function fetchAudit() {
+      console.log('[SharedResult] Fetching audit:', { id });
       // Try localStorage first (instant for same browser)
       let result = loadAudit(id!);
+      console.log('[SharedResult] localStorage result:', !!result);
+      
       // Fall back to backend (cross-device share links)
-      if (!result) result = await loadAuditRemote(id!);
+      if (!result) {
+        console.log('[SharedResult] Trying backend...');
+        result = await loadAuditRemote(id!);
+        console.log('[SharedResult] Backend result:', !!result);
+      }
+      
       setAudit(result ? anonymize(result) : null);
       setLoading(false);
     }

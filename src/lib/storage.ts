@@ -68,10 +68,29 @@ export function loadAudit(id: string): AuditResult | null {
 export async function loadAuditRemote(id: string): Promise<AuditResult | null> {
   try {
     const apiUrl = import.meta.env.VITE_API_URL || '';
-    const res = await fetch(`${apiUrl}/api/audits/${id}`);
-    if (!res.ok) return null;
-    return await res.json() as AuditResult;
-  } catch {
+    console.log('[storage] loadAuditRemote:', { id, apiUrl, apiUrlSet: !!import.meta.env.VITE_API_URL });
+    
+    if (!apiUrl) {
+      console.warn('[storage] VITE_API_URL not set — cannot fetch from backend');
+      return null;
+    }
+    
+    const url = `${apiUrl}/api/audits/${id}`;
+    console.log('[storage] Fetching from:', url);
+    
+    const res = await fetch(url);
+    console.log('[storage] Response status:', res.status);
+    
+    if (!res.ok) {
+      console.warn('[storage] Failed to fetch audit:', { status: res.status, id });
+      return null;
+    }
+    
+    const data = await res.json() as AuditResult;
+    console.log('[storage] Successfully loaded audit from backend:', { id });
+    return data;
+  } catch (err) {
+    console.error('[storage] Error loading audit from backend:', err);
     return null;
   }
 }
